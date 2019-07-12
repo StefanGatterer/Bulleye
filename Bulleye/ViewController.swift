@@ -10,6 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    // MARK: - Instance Varibles
     @IBOutlet weak var slider: UISlider!
     var randomValue =  0
     @IBOutlet weak var valueLabel: UILabel!
@@ -18,6 +19,8 @@ class ViewController: UIViewController {
     var round = 1
     @IBOutlet weak var scoreLabel: UILabel!
     var score = 0
+    var titel = ""
+    var difference = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,38 +30,74 @@ class ViewController: UIViewController {
     }
     
     func updateLabels() {
+        
+        randomValue = Int.random(in: 1...100)
+        currentValue = Int(slider.value)
         roundLabel.text = String(round)
         scoreLabel.text = String(score)
-        valueLabel.text = String(currentValue)
+        valueLabel.text = String(randomValue)
     }
 
     @IBAction func hitMe() {
-        print("Hit Me")
-        newRound()
+      
+        calculateScore()
+        showAlert()
+        
+    }
+    
+    func calculateScore() {
+        
+        difference = abs(randomValue - currentValue)
+        
+        if difference == 0 {
+            titel = "Volltreffer - 100 Punkte"
+            score += 100
+        } else if difference <= 5 {
+            titel = "Sehr gut - 50 Punkte"
+            score += 50
+        } else if difference <= 15 {
+            titel = "OK - 25 Punkte"
+            score += 25
+        } else {
+            titel = "Schade - keine Punkte"
+            score += 0
+        }
+    }
+    
+    func showAlert() {
+       
+        let alert = UIAlertController(title: titel, message: "Einstellung: \(currentValue), Abweichung: \(difference)", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Weiter", style: .default) {
+            
+            (action) in
+            
+            self.newRound()
+            self.updateLabels()
+            
+        }
+
+        alert.addAction(action)
+        self.present(alert, animated: true, completion: nil)
     }
     
     @IBAction func restart() {
-        print("restart")
+        round = 1
+        score = 0
+        updateLabels()
     }
     
-    @IBAction func info() {
-        print("info")
-        
-    }
-    
-    func startGame() {
-    
-    }
     
     func newRound() {
-        valueLabel.text = String(slider.value)
+        round += 1
+        updateLabels()
     }
     
     @IBAction func sliderMoved() {
-        print(slider.value)
+
         currentValue = Int(slider.value)
-        valueLabel.text = String(currentValue)
-        
+        print(slider.value)
+
     }
 }
 
